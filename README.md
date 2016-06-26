@@ -1,6 +1,8 @@
 slock-exec
 ==========
 
+[![Build Status](https://travis-ci.org/mmitch/slock-exec.svg?branch=master)](https://travis-ci.org/mmitch/slock-exec)
+[![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 what is this?
 -------------
@@ -41,6 +43,9 @@ copyright
 ---------
 
 See the ``LICENSE`` file for the original copyright notice of ``slock``.
+(While it says *MIT/X Consortium License* in the first line, the wording is
+ that of the plain MIT license; the additional paragraphs used by the X
+ Consortium are missing.  Perhaps an upstream bug?)
 
 
 homepage

@@ -113,6 +113,26 @@ getpw(void)
 #endif
 
 static void
+runscriptonlock()
+{
+	int ret;
+
+	/* run script before locking */
+	if ((ret = system("slock-script-lock")))
+		fprintf(stderr, "slock: error running `slock-script-lock': %d\n", ret);
+}
+
+static void
+runscriptonunlock(const char *passwd)
+{
+	int ret;
+
+	/* run script after unlocking, passing the password on stdin */
+	if ((ret = system("slock-script-unlock")))
+		fprintf(stderr, "slock: error running `slock-script-unlock': %d\n", ret);
+}
+
+static void
 #ifdef HAVE_BSD_AUTH
 readpw(Display *dpy)
 #else
@@ -160,7 +180,8 @@ readpw(Display *dpy, const char *pws)
 				if (running) {
 					XBell(dpy, 100);
 					failure = True;
-				}
+				} else
+					runscriptonunlock(passwd);
 				len = 0;
 				break;
 			case XK_Escape:
@@ -210,16 +231,6 @@ unlockscreen(Display *dpy, Lock *lock)
 	XDestroyWindow(dpy, lock->win);
 
 	free(lock);
-}
-
-static void
-runscriptonlock()
-{
-	int ret;
-
-	/* run script before locking */
-	if ((ret = system("slock-script-lock")))
-		fprintf(stderr, "slock: error running `slock-script-lock': %d\n", ret);
 }
 
 static Lock *

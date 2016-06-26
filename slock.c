@@ -115,11 +115,19 @@ getpw(void)
 static void
 runscriptonlock()
 {
-	int ret;
+	int pid;
 
-	/* run script before locking */
-	if ((ret = system("slock-script-lock")))
-		fprintf(stderr, "slock: error running `slock-script-lock': %d\n", ret);
+	if ((pid = fork()) < 0) {
+		fprintf(stderr, "slock: error on fork() during lock: %s\n", strerror(errno));
+		return;
+	}
+
+	if (pid == 0) {
+		/* child: run script on locking */
+		execlp("slock-script-lock", "slock-script-lock", (char *) NULL);
+		fprintf(stderr, "slock: error on exec() during lock: %s\n", strerror(errno));
+		exit(EXIT_FAILURE);
+	}
 }
 
 static void

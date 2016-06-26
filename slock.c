@@ -212,6 +212,16 @@ unlockscreen(Display *dpy, Lock *lock)
 	free(lock);
 }
 
+static void
+runscriptonlock()
+{
+	int ret;
+
+	/* run script before locking */
+	if ((ret = system("slock-script-lock")))
+		fprintf(stderr, "slock: error running `slock-script-lock': %d\n", ret);
+}
+
 static Lock *
 lockscreen(Display *dpy, int screen)
 {
@@ -233,6 +243,8 @@ lockscreen(Display *dpy, int screen)
 		XAllocNamedColor(dpy, DefaultColormap(dpy, lock->screen), colorname[i], &color, &dummy);
 		lock->colors[i] = color.pixel;
 	}
+
+	runscriptonlock();
 
 	/* init */
 	wa.override_redirect = 1;

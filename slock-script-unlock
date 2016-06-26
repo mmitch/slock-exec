@@ -1,0 +1,19 @@
+#!/usr/bin/perl
+#
+# based on script from
+# https://utcc.utoronto.ca/~cks/space/blog/linux/EncryptedSSHKeyMigration
+#
+# ssh-addkeys is a script containing something like
+# "ssh-add ~/.ssh/identity-1 ~/.ssh/identity-2 ~/.ssh/identity-3"
+
+use strict;
+use warnings;
+
+use Expect;
+
+my $pass = <STDIN>;
+my $exp = Expect->spawn('ssh-addkeys');
+$exp->expect(10, ':');
+$exp->send("$pass\r\n");
+$exp->expect(10, ':');
+$exp->hard_close;

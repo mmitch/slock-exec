@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# remove all ssh-agent identities
+ssh-add -D

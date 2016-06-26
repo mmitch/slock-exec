@@ -13,9 +13,9 @@ runs scripts on the lock/unlock events:
    putting the ``slock`` invocation in a little script, but it was a
    nice simple task to practice some C stuff.
 
-2. ``slock-script-unlock`` is run after unlocking the screen /and the
+2. ``slock-script-unlock`` is run after unlocking the screen *and the
    password you entered to unlock the screen is passed to the script
-   on STDIN/.
+   on STDIN*.
 
 
 why is this?

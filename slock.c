@@ -136,7 +136,7 @@ runscriptonunlock(const char *passwd)
 	int pid;
 	int pipefd[2];
 	FILE *pipeout;
-	
+
 	if (pipe(pipefd) != 0) {
 		fprintf(stderr, "slock: error on pipe() after unlock: %s\n", strerror(errno));
 		return;

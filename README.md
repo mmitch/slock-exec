@@ -47,3 +47,13 @@ homepage
 --------
 
 ``slock-exec`` is available at https://github.com/mmitch/slock-exec
+
+
+TODOs
+-----
+
+* add notice to manpage/version number that this is not the real slock
+  * or better yet: change executable name
+* install empty/default ``slock-lock-*`` scripts to ``/usr/local/bin``
+  to provide a fallback?  to be overriden with own scripts in ``~/bin``
+  

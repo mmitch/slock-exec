@@ -125,7 +125,7 @@ runscriptonlock()
 	if (pid == 0) {
 		/* child: run script on locking */
 		execlp("slock-script-lock", "slock-script-lock", (char *) NULL);
-		fprintf(stderr, "slock: error on exec() during lock: %s\n", strerror(errno));
+		fprintf(stderr, "slock/child: error on exec() during lock: %s\n", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 }
@@ -133,11 +133,44 @@ runscriptonlock()
 static void
 runscriptonunlock(const char *passwd)
 {
-	int ret;
+	int pid;
+	int pipefd[2];
+	FILE *pipeout;
+	
+	if (pipe(pipefd) != 0) {
+		fprintf(stderr, "slock: error on pipe() after unlock: %s\n", strerror(errno));
+		return;
+	}
 
-	/* run script after unlocking, passing the password on stdin */
-	if ((ret = system("slock-script-unlock")))
-		fprintf(stderr, "slock: error running `slock-script-unlock': %d\n", ret);
+	if ((pid = fork()) < 0) {
+		fprintf(stderr, "slock: error on fork() after unlock: %s\n", strerror(errno));
+		close(pipefd[0]);
+		close(pipefd[1]);
+		return;
+	}
+
+	if (pid == 0) {
+		/* child: run script after unlocking, passing the password on stdin */
+		close(pipefd[1]); /* close write-end */
+		if (dup2(pipefd[0], STDIN_FILENO) < 0) {
+			fprintf(stderr, "slock/child: error on dup2() after unlock: %s\n", strerror(errno));
+			exit(EXIT_FAILURE);
+		}
+		execlp("slock-script-unlock", "slock-script-unlock", (char *) NULL);
+		fprintf(stderr, "slock/child: error on exec() after unlock: %s\n", strerror(errno));
+		exit(EXIT_FAILURE);
+	} else {
+		/* parent: write password to child*/
+		close(pipefd[0]); /* close read-end */
+		if ((pipeout = fdopen(pipefd[1], "a")) == NULL)
+			fprintf(stderr, "slock: error on fdopen() after unlock: %s\n", strerror(errno));
+		else {
+			fprintf(pipeout, "%s\n", passwd);
+			if (fclose(pipeout) != 0)
+				fprintf(stderr, "slock: error on fclose() after unlock: %s\n", strerror(errno));
+		}
+		close(pipefd[1]); /* close write-end */
+	}
 }
 
 static void

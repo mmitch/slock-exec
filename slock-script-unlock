@@ -15,5 +15,5 @@ my $pass = <STDIN>;
 my $exp = Expect->spawn('ssh-addkeys');
 $exp->expect(10, ':');
 $exp->send("$pass\r\n");
-$exp->expect(10, ':');
+while ($exp->expect(10, ':')) {}; # munge all lines
 $exp->hard_close;

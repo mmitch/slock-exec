@@ -113,21 +113,38 @@ getpw(void)
 #endif
 
 static void
-runscriptonlock()
+runscript(const char* scriptname)
 {
 	int pid;
 
 	if ((pid = fork()) < 0) {
-		fprintf(stderr, "slock: error on fork() during lock: %s\n", strerror(errno));
+		fprintf(stderr, "slock: error on fork() for %s: %s\n", scriptname, strerror(errno));
 		return;
 	}
 
 	if (pid == 0) {
-		/* child: run script on locking */
-		execlp("slock-script-lock", "slock-script-lock", (char *) NULL);
-		fprintf(stderr, "slock/child: error on exec() during lock: %s\n", strerror(errno));
+		execlp(scriptname, scriptname, (char *) NULL);
+		fprintf(stderr, "slock/child: error on exec() for %s: %s\n", scriptname, strerror(errno));
 		exit(EXIT_FAILURE);
 	}
+}
+
+static void
+runscriptvolumeup()
+{
+	runscript("volume-up");
+}
+
+static void
+runscriptvolumedown()
+{
+	runscript("volume-down");
+}
+
+static void
+runscriptonlock()
+{
+	runscript("slock-script-lock");
 }
 
 static void
@@ -198,6 +215,20 @@ readpw(Display *dpy, const char *pws)
 		if (ev.type == KeyPress) {
 			buf[0] = 0;
 			num = XLookupString(&ev.xkey, buf, sizeof(buf), &ksym, 0);
+
+			/* handle volume changes during lock */
+			if (((XKeyEvent*) &ev)->state & Mod1Mask) {
+				switch (ksym) {
+				case XK_Next:
+					runscriptvolumedown();
+					continue;
+					
+				case XK_Prior:
+					runscriptvolumeup();
+					continue;
+				}
+			}
+			
 			if (IsKeypadKey(ksym)) {
 				if (ksym == XK_KP_Enter)
 					ksym = XK_Return;

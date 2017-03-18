@@ -17,3 +17,6 @@ $exp->expect(10, ':');
 $exp->send("$pass\r\n");
 while ($exp->expect(10, ':')) {}; # munge all lines
 $exp->hard_close;
+
+# resume message display when using dunst(1)
+system('killall -q -SIGUSR2 dunst');

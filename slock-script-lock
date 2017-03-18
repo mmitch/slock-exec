@@ -2,3 +2,6 @@
 
 # remove all ssh-agent identities
 ssh-add -D
+
+# pause message display when using dunst(1)
+killall -q -SIGUSR1 dunst || true

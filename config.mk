@@ -1,5 +1,5 @@
 # slock version
-VERSION = 1.4
+VERSION = 1.4+slock-exec-$(shell if [ -d .git ]; then git describe --always --dirty; else echo NOGIT; fi)
 
 # Customize below to fit your system
 

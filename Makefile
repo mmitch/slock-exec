@@ -50,13 +50,13 @@ dist: clean
 	@rm -rf slock-${VERSION}
 
 install: all
-	@echo ensure that ${BINDIR} is ours
+	@echo ensure that ${BINDIR} is only accessible to us
 	@chmod 700 ${BINDIR}
 	@echo installing executable file to ${BINDIR}
 	@mkdir -p ${BINDIR}
 	@cp -f slock ${BINDIR}
-	@chmod 755 ${BINDIR}/slock
-	@chmod u+s ${BINDIR}/slock
+	@chown root ${BINDIR}/slock
+	@chmod 4755 ${BINDIR}/slock
 	@echo installing manual page to ${MANDIR}
 	@mkdir -p ${MANDIR}
 	@sed "s/VERSION/${VERSION}/g" <slock.1 >${MANDIR}/slock.1
